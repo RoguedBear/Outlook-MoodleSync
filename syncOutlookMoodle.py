@@ -9,6 +9,7 @@ import requests
 import requests.cookies
 import yaml
 
+from rssPublisher import generate_feed
 
 class UnableToLoginException(Exception):
     pass
@@ -152,7 +153,8 @@ if updateGist:
     logger.info("Updating github gist...")
     headers = {"Authorization": f"token {config['gist_token']}",
                }
-    data = {"files": {'test.ics': {'content': calendar.text}
+    data = {"files": {'test.ics': {'content': calendar.text},
+                      'rssFeed.rss': {'content': generate_feed()}
                       },
             "accept": "application/vnd.github.v3+json",
             "gist_id": config['gist_id'],
