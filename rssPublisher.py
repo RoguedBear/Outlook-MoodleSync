@@ -5,6 +5,7 @@ from icalendar import Calendar, Event
 from datetime import datetime
 import xml.dom.minidom
 from rfeed import Item, Guid, Feed
+from dateutil import tz
 
 
 class SimpleEvent:
@@ -13,8 +14,9 @@ class SimpleEvent:
         self.summary = unescape(str(event.get("SUMMARY", "")))
         self.description = str(event.get("DESCRIPTION", ""))
         self.category = unescape(str(event.get("CATEGORIES", "").cats[0]))
-        self.dtstart: datetime = event["DTSTART"].dt
-        self.dtend: datetime = event["DTEND"].dt
+        self.dtstart: datetime = event["DTSTART"].dt.astimezone(tz.gettz("Asia/Calcutta"))
+        self.dtend: datetime = event["DTEND"].dt.astimezone(tz.gettz("Asia/Calcutta"))
+        self.last_mod: datetime = event['LAST-MODIFIED'].dt
 
 
 def read_ics():
