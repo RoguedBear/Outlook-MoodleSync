@@ -174,6 +174,7 @@ try:
         old_calendar = stored_calendar.read()
         if len(old_calendar) != len(calendar.text):
             updateGist = True
+            # explanation https://stackoverflow.com/a/48863075
             stored_calendar.seek(0)
             stored_calendar.truncate(0)
             stored_calendar.write(calendar.text)
