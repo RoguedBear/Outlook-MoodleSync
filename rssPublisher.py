@@ -1,11 +1,11 @@
-from typing import List
-from html import unescape
-
-from icalendar import Calendar, Event
-from datetime import datetime
 import xml.dom.minidom
-from rfeed import Item, Guid, Feed
+from datetime import datetime
+from html import unescape
+from typing import List
+
 from dateutil import tz
+from icalendar import Calendar, Event
+from rfeed import Feed, Guid, Item
 
 
 class SimpleEvent:

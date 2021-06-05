@@ -1,12 +1,13 @@
 #  Copyright (c) 2021 RoguedBear
 import json
 import logging
-
-from rssPublisher import read_ics, get_events, SimpleEvent
 from hashlib import md5
 from random import choice
+
 from discord import Color
 from requests import Session
+
+from rssPublisher import SimpleEvent, get_events, read_ics
 
 logger1 = logging.getLogger(__name__)
 
