@@ -12,6 +12,7 @@ import six
 import yaml
 
 from rssPublisher import generate_feed
+from sendWebhook import send_webhooks_main
 
 
 class UnableToLoginException(Exception):
@@ -21,6 +22,7 @@ class UnableToLoginException(Exception):
 def login(login_link: str, username: str, password: str) -> dict:
     """
     Logs in to moodle and gets the MoodleSession cookie value
+    :param login_link: link to login
     :param username: username
     :param password: password
     :return: MoodleSession cookie value
@@ -88,7 +90,7 @@ def sanitise_password(pwd: str) -> str:
     return decode(k, pwd.encode())
 
 
-logging.basicConfig(level=20)
+logging.basicConfig(level=10)
 logger = logging.getLogger()
 rotate_logs = TimedRotatingFileHandler(
     "logs/calendar.log", backupCount=7, when='midnight')
@@ -209,6 +211,8 @@ if updateGist:
         logger.error(pprint.pformat(github_response.json()))
     else:
         logger.info("Github gist updated %s", github_response)
+    logger.info("Sending webhooks...")
+    send_webhooks_main(config)
 
 save_config(config)
 # input("Press anything to quit...")
