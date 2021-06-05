@@ -1,3 +1,4 @@
+import base64
 import json
 import logging
 # import os
@@ -7,6 +8,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 import requests
 import requests.cookies
+import six
 import yaml
 
 from rssPublisher import generate_feed
@@ -57,6 +59,33 @@ def add_refresh_interval(cal: str) -> str:
             lines.insert(index + 1, PUBLISH_LIMIT)
             break
     return "\r\n".join(lines)
+
+
+def sanitise_password(pwd: str) -> str:
+    # Vigenere Cipher
+    # def encode(key: str, string: str) -> bytes:
+    #     encoded_chars = []
+    #     for i in range(len(string)):
+    #         key_c = key[i % len(key)]
+    #         encoded_c = chr(ord(string[i]) + ord(key_c) % 256)
+    #         encoded_chars.append(encoded_c)
+    #     encoded_string = ''.join(encoded_chars)
+    #     encoded_string = encoded_string.encode('latin') if six.PY3 else encoded_string
+    #     return base64.urlsafe_b64encode(encoded_string).rstrip(b'=')
+
+    def decode(key: str, string: bytes) -> str:
+        string = base64.urlsafe_b64decode(string + b'===')
+        string = string.decode('latin') if six.PY3 else string
+        encoded_chars = []
+        for i in range(len(string)):
+            key_c = key[i % len(key)]
+            encoded_c = chr((ord(string[i]) - ord(key_c) + 256) % 256)
+            encoded_chars.append(encoded_c)
+        encoded_string = ''.join(encoded_chars)
+        return encoded_string
+    k = "super s+lty +bcd".replace(str(base64.b64decode(b"Kw==")), "a")
+
+    return decode(k, pwd.encode())
 
 
 logging.basicConfig(level=20)
@@ -113,7 +142,7 @@ while True:
             if tries == 1:
                 raise UnableToLoginException()
             config['cookie'] = login(
-                config['login_link'], config['username'], config['password'])
+                config['login_link'], config['username'], sanitise_password(config['password']))
         except UnableToLoginException:
             # logger.warning(
             #     "Unable to automatically login, try logging in manually and then fill the cookies")
