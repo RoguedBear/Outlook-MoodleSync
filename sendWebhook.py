@@ -20,8 +20,8 @@ class Media:
     def genJSON(self):
         return {
             "url": self.url,
-            "width": self.width,
-            "height": self.height
+            # "width": self.width,
+            # "height": self.height
         }
 
 
@@ -89,7 +89,10 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
     embed = {
         "username": "LMS Bot",
         "avatar_url": "https://cdn.discordapp.com/emojis/831953662153588766.png",
-        "content": "testing webhook; test **#5**",
+        "content": f"A new event on LMS popped up: `{event.summary}`\n@everyone",
+        "allowed_mentions": {
+            "parse": ["everyone"],
+        },
         "embeds": [
             {
                 "title": f"__{event.summary}__",
@@ -147,7 +150,8 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
                                                 })
     # send eyebleach pictures
     key, media = randomCuteImageLink()
-    embed["embeds"][0][key] = media.genJSON()
+    if key is not False:
+        embed["embeds"][0][key] = media.genJSON()
 
     try:
         s = session.post(url=kwargs["webhook"]["url"], json=embed)
@@ -165,14 +169,24 @@ def randomCuteImageLink():
     links = {
         "image": [
             Media("https://cdn.discordapp.com/emojis/816550207206195220.png?v=1"),
+            Media("https://i.redd.it/vr50ukpo3tz61.jpg"),
+            Media("https://i.redd.it/xd7z2tui9gy61.png"),
+            Media("https://i.imgur.com/SCNqBQG.jpg"),
+            Media("https://i.redd.it/3847pw673u751.jpg")
         ],
         "video": [
             Media("https://tenor.com/bCAqV.gif"),
             Media("https://tenor.com/bDiFj.gif"),
             Media("https://tenor.com/bmWK8.gif"),
             Media("https://tenor.com/boPYY.gif"),
+            Media("https://thumbs.gfycat.com/UnluckySimpleAsianpiedstarling-mobile.mp4"),
+            Media("https://redditsave.com/d/aHR0cHM6Ly9pLnJlZGQuaXQvbWtoMXRxN3Y5ODI3MS5naWY=")
         ]}
-    return (key := choice(links)), choice(links[key])
+    key = choice(["image", False])
+    if key is False:
+        return False, False
+    else:
+        return key, choice(links[key])
 
 
 def send_webhooks_main(config: dict):
@@ -182,7 +196,6 @@ def send_webhooks_main(config: dict):
     hashes_to_add = []
 
     session = Session()
-    logger.info("Logger 1 test")
     count = 0
     for event in events_list:
         cur_hash = calculate_hash(event)

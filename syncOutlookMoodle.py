@@ -90,7 +90,7 @@ def sanitise_password(pwd: str) -> str:
     return decode(k, pwd.encode())
 
 
-logging.basicConfig(level=10)
+logging.basicConfig(level=20)
 logger = logging.getLogger()
 rotate_logs = TimedRotatingFileHandler(
     "logs/calendar.log", backupCount=7, when='midnight')
