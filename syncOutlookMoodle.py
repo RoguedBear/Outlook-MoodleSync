@@ -174,6 +174,7 @@ try:
         old_calendar = stored_calendar.read()
         if len(old_calendar) != len(calendar.text):
             updateGist = True
+            stored_calendar.seek(0)
             stored_calendar.truncate(0)
             stored_calendar.write(calendar.text)
             logger.info("Received calendar is different.")
