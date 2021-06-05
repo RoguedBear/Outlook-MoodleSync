@@ -11,6 +11,7 @@ import yaml
 
 from rssPublisher import generate_feed
 
+
 class UnableToLoginException(Exception):
     pass
 
@@ -46,6 +47,16 @@ def save_config(config: dict):
             logger.info("Dumping new config data")
             config_file.seek(0)
             yaml.safe_dump(config, config_file)
+
+
+def add_refresh_interval(cal: str) -> str:
+    PUBLISH_LIMIT = "X-PUBLISHED-TTL:PT5M"
+    lines = cal.split("\r\n")
+    for index, line in enumerate(lines):
+        if line == "VERSION:2.0":
+            lines.insert(index + 1, PUBLISH_LIMIT)
+            break
+    return "\r\n".join(lines)
 
 
 logging.basicConfig(level=20)
@@ -153,7 +164,7 @@ if updateGist:
     logger.info("Updating github gist...")
     headers = {"Authorization": f"token {config['gist_token']}",
                }
-    data = {"files": {'test.ics': {'content': calendar.text},
+    data = {"files": {'test.ics': {'content': add_refresh_interval(calendar.text)},
                       'rssFeed.rss': {'content': generate_feed()}
                       },
             "accept": "application/vnd.github.v3+json",
