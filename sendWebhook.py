@@ -1,5 +1,4 @@
 #  Copyright (c) 2021 RoguedBear
-import json
 import logging
 from hashlib import md5
 from random import choice
@@ -33,7 +32,7 @@ def calculate_hash(event: SimpleEvent) -> str:
 
 def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
     # The embeds
-    embed_old = {
+    {
         "content": "testing webhook; test #2",
         "embeds": {
             "title": f"__{event.summary}__",
@@ -153,6 +152,7 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
     key, media = randomCuteImageLink()
     if key is not False:
         embed["embeds"][0][key] = media.genJSON()
+        embed["embeds"][0]["fields"].pop(-1)
 
     try:
         s = session.post(url=kwargs["webhook"]["url"], json=embed)
