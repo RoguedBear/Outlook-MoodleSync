@@ -12,6 +12,7 @@ import requests.cookies
 import six
 import yaml
 
+from processCalendar import process_calendar
 from rssPublisher import generate_feed
 from sendWebhook import send_webhooks_main
 
@@ -169,29 +170,31 @@ while True:
         logger.info("Calendar seems good.")
         break
 
+# Process the calendar
+CALENDAR_TEXT = process_calendar(calendar.text).decode()
 # check if calendar needs updating
 updateGist = False
 try:
     with open("calendar_.ics", "r+", newline="") as stored_calendar:
         old_calendar = stored_calendar.read()
-        if len(old_calendar) != len(calendar.text):
+        if len(old_calendar) != len(CALENDAR_TEXT):
             updateGist = True
             # explanation https://stackoverflow.com/a/48863075
             stored_calendar.seek(0)
             stored_calendar.truncate(0)
-            stored_calendar.write(calendar.text)
+            stored_calendar.write(CALENDAR_TEXT)
             logger.info("Received calendar is different.")
             logger.debug("\nFile:\n" + old_calendar +
-                         "\nOnline:\n" + calendar.text)
-            logger.debug("len(old_calendar) = %d \t len(calendar.text) = %d",
+                         "\nOnline:\n" + CALENDAR_TEXT)
+            logger.debug("len(old_calendar) = %d \t len(CALENDAR_TEXT) = %d",
                          len(old_calendar),
-                         len(calendar.text))
+                         len(CALENDAR_TEXT))
         else:
             logger.info(
                 "Calendar recieved is same. Gist does not need updating")
 except FileNotFoundError:
     with open("calendar_.ics", "w") as file:
-        file.write(calendar.text)
+        file.write(CALENDAR_TEXT)
     updateGist = True
 
 if updateGist:
@@ -199,7 +202,7 @@ if updateGist:
     logger.info("Updating github gist...")
     headers = {"Authorization": f"token {config['gist_token']}",
                }
-    data = {"files": {'test.ics': {'content': add_refresh_interval(calendar.text)},
+    data = {"files": {'test.ics': {'content': CALENDAR_TEXT},
                       'rssFeed.rss': {'content': generate_feed()}
                       },
             "accept": "application/vnd.github.v3+json",

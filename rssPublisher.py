@@ -18,6 +18,7 @@ class SimpleEvent:
         self.dtstart: datetime = event["DTSTART"].dt.astimezone(tz.gettz("Asia/Calcutta"))
         self.dtend: datetime = event["DTEND"].dt.astimezone(tz.gettz("Asia/Calcutta"))
         self.last_mod: datetime = event['LAST-MODIFIED'].dt
+        self.isquiz = False if self.dtstart == self.dtend else True
 
 
 def read_ics():
@@ -36,12 +37,18 @@ def get_events(cal: Calendar) -> List[SimpleEvent]:
 
 
 def generate_feed_item(event: SimpleEvent) -> Item:
-    description = f"""**Event:** {event.summary}
-**Due by:** {event.dtend.strftime('%a %d %b, %H:%M:%S')}
-**Subject:** {event.category}"""
+    description = [f"**Event:** {event.summary}",
+                   f"**Subject:** {event.category}"]
+    if event.isquiz:
+        description.insert(1, f"**Starting time:** {event.dtend.strftime('%a %d %b, %H:%M:%S')}")
+        description.insert(2, f"**End time:** {event.dtend.strftime('%a %d %b, %H:%M:%S')}")
+    else:
+        description.insert(1, f"**Due by:** {event.dtend.strftime('%a %d %b, %H:%M:%S')}")
+
+    description = "\n".join(description)
 
     description += "" if event.description is None else (
-        "\n" + event.description)
+            "\n" + event.description)
     return Item(title=f"{event.summary}",
                 description=description,
                 author="BouncePrime@protonmail.com (BouncePrime)",

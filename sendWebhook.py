@@ -10,6 +10,8 @@ from rssPublisher import SimpleEvent, get_events, read_ics
 
 logger1 = logging.getLogger(__name__)
 
+ALLOW_EVERYONE = True
+
 
 class Media:
     def __init__(self, url: str, height: int = 256, width: int = 256):
@@ -91,7 +93,7 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
         "avatar_url": "https://cdn.discordapp.com/emojis/831953662153588766.png",
         "content": f"A new event on LMS popped up: `{event.summary}`\n@everyone",
         "allowed_mentions": {
-            "parse": ["everyone"],
+            "parse": ["everyone" if ALLOW_EVERYONE else ""],
         },
         "embeds": [
             {
@@ -111,7 +113,7 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
                     "url": "https://lms.bennett.edu.in/theme/image.php/lambda/theme/1609510051/favicon"
                 },
                 "footer": {
-                    "text": "Bot by BouncePrime ♥ | teach' created event @ ",
+                    "text": "Bot made by BouncePrime ♥ | teach' created event @ ",
                     "icon_url": "https://cdn.discordapp.com/attachments/794508344441700382/834801643089952768/test_1"
                                 ".png "
                 },
@@ -120,22 +122,6 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
                         "name": "__Subject__",
                         "value": f"`{event.category}`",
                         "inline": False if event.description == "" else True
-                    },
-                    {
-                        "name": "Starting Time",
-                        "value": event.dtstart.strftime('%a %d %b, %H:%M:%S'),
-                        "inline": True
-                    },
-                    {
-                        "name": "End Time",
-                        "value": event.dtend.strftime('%a %d %b, %H:%M:%S'),
-                        "inline": True
-                    },
-                    {
-                        "name": "--------",
-                        "value": "> Instead of sadness, have some eyebleach <:wholesome_seal:785811088616062976>\n"
-                                 "||PM me (<@712318895062515809>) more eyebleach doggo pictures to be added here||\n",
-                        "inline": False
                     }
                 ]
             }
@@ -148,12 +134,40 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
                                                 "value": event.description,
                                                 "inline": False
                                                 })
+
+    # Set the starting/end time if quiz other wise due date
+    if event.isquiz:
+        start_time = {
+            "name": "Starting Time",
+            "value": event.dtstart.strftime('%a %d %b, %H:%M:%S'),
+            "inline": True
+        }
+        end_time = {
+            "name": "End Time",
+            "value": event.dtend.strftime('%a %d %b, %H:%M:%S'),
+            "inline": True
+        }
+        embed["embeds"][0]["fields"].append(start_time)
+        embed["embeds"][0]["fields"].append(end_time)
+    else:
+        due_by = {
+            "name": "Due By",
+            "value": event.dtstart.strftime('%a %d %b, %H:%M:%S'),
+            "inline": True
+        }
+        embed["embeds"][0]["fields"].append(due_by)
+
     # send eyebleach pictures
     key, media = randomCuteImageLink()
     if key is not False:
         embed["embeds"][0][key] = media.genJSON()
-    else:
-        embed["embeds"][0]["fields"].pop(-1)
+        wholesome_footer = {
+            "name": "--------",
+            "value": "> Instead of sadness, have some eyebleach <:wholesome_seal:785811088616062976>\n"
+                     "||PM me (<@712318895062515809>) more eyebleach doggo pictures to be added here||\n",
+            "inline": False
+        }
+        embed["embeds"][0]["fields"].append(wholesome_footer)
 
     try:
         s = session.post(url=kwargs["webhook"]["url"], json=embed)
@@ -184,7 +198,7 @@ def randomCuteImageLink():
             Media("https://tenor.com/boPYY.gif"),
             Media("https://thumbs.gfycat.com/UnluckySimpleAsianpiedstarling-mobile.mp4"),
             Media(
-                "https://redditsave.com/d/aHR0cHM6Ly9pLnJlZGQuaXQvbWtoMXRxN3Y5ODI3MS5naWY=")
+                    "https://redditsave.com/d/aHR0cHM6Ly9pLnJlZGQuaXQvbWtoMXRxN3Y5ODI3MS5naWY=")
         ]}
     key = choice(["image", False])
     if key is False:
@@ -223,7 +237,7 @@ if __name__ == '__main__':
     with open("config.yaml") as f:
         config = yaml.safe_load(f)
 
-    DEBUG = True
+    DEBUG = False
     if not DEBUG:
         send_webhooks_main(config)
     else:
