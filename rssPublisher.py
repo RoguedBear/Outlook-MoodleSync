@@ -1,3 +1,4 @@
+#  Copyright (c) 2021 RoguedBear
 import xml.dom.minidom
 from datetime import datetime
 from html import unescape
