@@ -32,7 +32,7 @@ def calculate_hash(event: SimpleEvent) -> str:
 
 def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
     # The embeds
-    {
+    _ = {
         "content": "testing webhook; test #2",
         "embeds": {
             "title": f"__{event.summary}__",
@@ -168,6 +168,7 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
 
 
 def randomCuteImageLink():
+    # TODO: way to send gifs/mp4s in the embed
     links = {
         "image": [
             Media("https://cdn.discordapp.com/emojis/816550207206195220.png?v=1"),
@@ -221,6 +222,15 @@ if __name__ == '__main__':
     logger1 = logging.getLogger(__name__)
     with open("config.yaml") as f:
         config = yaml.safe_load(f)
-    send_webhooks_main(config)
-    # with open("config.yaml", "w") as f:
-    #     yaml.safe_dump(config, f)
+
+    DEBUG = True
+    if not DEBUG:
+        send_webhooks_main(config)
+    else:
+        # calculate hash for each event
+        events_list = get_events(read_ics())
+        hashes = [calculate_hash(event) for event in events_list]
+        config["webhook"]["sent-events-hash"] = hashes
+        # save it
+        with open("config.yaml", "w") as f:
+            yaml.safe_dump(config, f)
