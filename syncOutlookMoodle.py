@@ -50,6 +50,7 @@ def save_config(config: dict):
         if config2 != config:
             logger.info("Dumping new config data")
             config_file.seek(0)
+            config_file.truncate()
             yaml.safe_dump(config, config_file)
 
 

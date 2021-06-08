@@ -152,6 +152,7 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
     key, media = randomCuteImageLink()
     if key is not False:
         embed["embeds"][0][key] = media.genJSON()
+    else:
         embed["embeds"][0]["fields"].pop(-1)
 
     try:
@@ -181,7 +182,8 @@ def randomCuteImageLink():
             Media("https://tenor.com/bmWK8.gif"),
             Media("https://tenor.com/boPYY.gif"),
             Media("https://thumbs.gfycat.com/UnluckySimpleAsianpiedstarling-mobile.mp4"),
-            Media("https://redditsave.com/d/aHR0cHM6Ly9pLnJlZGQuaXQvbWtoMXRxN3Y5ODI3MS5naWY=")
+            Media(
+                "https://redditsave.com/d/aHR0cHM6Ly9pLnJlZGQuaXQvbWtoMXRxN3Y5ODI3MS5naWY=")
         ]}
     key = choice(["image", False])
     if key is False:
