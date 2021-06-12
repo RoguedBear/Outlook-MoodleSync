@@ -1,4 +1,5 @@
 #  Copyright (c) 2021 RoguedBear
+import json
 import logging
 from hashlib import md5
 from random import choice
@@ -130,10 +131,18 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
 
     # Add to embed if there's a description
     if event.description:
-        embed["embeds"][0]["fields"].insert(1, {"name": "__Description__",
-                                                "value": event.description,
-                                                "inline": False
-                                                })
+        if (desc_len := len(event.description)) < 1024:
+            embed["embeds"][0]["fields"].insert(1, {"name": "__Description__",
+                                                    "value": event.description,
+                                                    "inline": False
+                                                    })
+        elif 1024 <= desc_len < 2048:
+            embed["embeds"][0]["description"] = event.description
+        else:
+            embed["embeds"][0]["fields"].insert(1, {"name": "__Description__",
+                                                    "value": event.description[:1000] + "\n...\nRead on LMS",
+                                                    "inline": False
+                                                    })
 
     # Set the starting/end time if quiz other wise due date
     if event.isquiz:
@@ -175,6 +184,7 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
     except Exception as e:
         logger1.exception(e)
         logger1.error(s.reason, s.text)
+        logger1.error(json.dumps(embed))
         return False
     else:
         logger1.info("Webhook response sent for: %s", event.summary)
@@ -198,7 +208,7 @@ def randomCuteImageLink():
             Media("https://tenor.com/boPYY.gif"),
             Media("https://thumbs.gfycat.com/UnluckySimpleAsianpiedstarling-mobile.mp4"),
             Media(
-                    "https://redditsave.com/d/aHR0cHM6Ly9pLnJlZGQuaXQvbWtoMXRxN3Y5ODI3MS5naWY=")
+                "https://redditsave.com/d/aHR0cHM6Ly9pLnJlZGQuaXQvbWtoMXRxN3Y5ODI3MS5naWY=")
         ]}
     key = choice(["image", False])
     if key is False:
@@ -237,7 +247,7 @@ if __name__ == '__main__':
     with open("config.yaml") as f:
         config = yaml.safe_load(f)
 
-    DEBUG = False
+    DEBUG = True
     if not DEBUG:
         send_webhooks_main(config)
     else:
