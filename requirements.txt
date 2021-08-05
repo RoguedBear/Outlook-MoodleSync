@@ -1,0 +1,6 @@
+PyYAML
+requests
+python-dateutil
+icalendar
+rfeed
+six

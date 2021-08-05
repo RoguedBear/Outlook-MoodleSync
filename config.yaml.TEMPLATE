@@ -1,0 +1,21 @@
+calendar_link:
+cookie:
+  MoodleSession:
+empty_calendar: "BEGIN:VCALENDAR
+
+  METHOD:PUBLISH
+
+  PRODID:-//John Papaioannou/NONSGML Bennu 0.1//EN
+
+  VERSION:2.0
+
+  END:VCALENDAR
+
+  "
+gist_id:
+gist_token:
+login_link:
+password:
+username:
+webhook:
+  url: https://discord.com/api/webhooks/

@@ -5,7 +5,7 @@
 // @description  try to take over the world!
 // @author       You
 // @match        https://lms.bennett.edu.in/login/index.php
-// @icon         https://lms.bennett.edu.in/theme/image.php/lambda/theme/1609510051/favicon
+// @icon         https://tracker.moodle.org/secure/attachment/68503/Moodle_Circle_M_RGB.png
 // @grant        none
 // ==/UserScript==
 let cookieBar = `<div class="form-label">

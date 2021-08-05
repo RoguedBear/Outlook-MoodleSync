@@ -3,9 +3,9 @@
 // @namespace    http://tampermonkey.net/
 // @version      2.0
 // @description  try to take over the world!
-// @author       You
+// @author       RoguedBear
 // @match        https://lms.bennett.edu.in/login/index.php
-// @icon         https://lms.bennett.edu.in/theme/image.php/lambda/theme/1609510051/favicon
+// @icon         https://tracker.moodle.org/secure/attachment/68503/Moodle_Circle_M_RGB.png
 // @grant        none
 // ==/UserScript==
 
