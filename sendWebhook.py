@@ -172,6 +172,8 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
             "value": event.dtend.strftime('%a %d %b, %H:%M:%S'),
             "inline": True
         }
+        embed["content"] += " **Starts in <t:{:.0f}:R> & Ends at <t:{:.0f}:T>**".format(
+            event.dtstart.timestamp(), event.dtend.timestamp())
         embed["embeds"][0]["fields"].append(start_time)
         embed["embeds"][0]["fields"].append(end_time)
     else:
@@ -180,6 +182,8 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
             "value": event.dtstart.strftime('%a %d %b, %H:%M:%S'),
             "inline": True
         }
+        embed["content"] += " **Due <t:{:.0f}:R>**".format(
+            event.dtstart.timestamp())
         embed["embeds"][0]["fields"].append(due_by)
 
     # send eyebleach pictures
