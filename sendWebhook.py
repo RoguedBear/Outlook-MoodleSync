@@ -105,12 +105,20 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
             ]
         }
     }
+    mentions = ""
+    if event.category == "ECSE219L(Specialization Core - I)":
+        mentions = "<@&878107435477389362>"
+    elif event.category == "ECSE237L(Specialization Core - I)":
+        mentions = "<@&878107877770948698>"
+    else:
+        mentions = "@everyone"
+
     embed = {
         "username": "LMS Bot",
         "avatar_url": "https://cdn.discordapp.com/emojis/831953662153588766.png",
-        "content": f"A new event on LMS popped up: `{event.summary}`\n@everyone",
+        "content": f"A new event on LMS popped up: `{event.summary}`\n{mentions}",
         "allowed_mentions": {
-            "parse": ["everyone" if ALLOW_EVERYONE else ""],
+            "parse": ["everyone", "roles"] if ALLOW_EVERYONE else [],
         },
         "embeds": [
             {
@@ -124,15 +132,14 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
                 "author": {
                     "name": "LMS Bot",
                     "url": "https://github.com/RoguedBear",
-                    "icon_url": "https://cdn.discordapp.com/emojis/831953662153588766.png"
+                    "icon_url": "https://cdn.discordapp.com/emojis/832110679048978472.png"
                 },
                 "thumbnail": {
                     "url": "https://lms.bennett.edu.in/theme/image.php/lambda/theme/1609510051/favicon"
                 },
                 "footer": {
                     "text": "Bot made by BouncePrime ♥ | teach' created event @ ",
-                    "icon_url": "https://cdn.discordapp.com/attachments/794508344441700382/834801643089952768/test_1"
-                                ".png "
+                    "icon_url": "https://cdn.discordapp.com/avatars/712318895062515809/a_f9b50dfe441c8ddc0a7f2cbe0b60ff0d.webp"
                 },
                 "fields": [
                     {
@@ -172,7 +179,7 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
             "value": event.dtend.strftime('%a %d %b, %H:%M:%S'),
             "inline": True
         }
-        embed["content"] += " **Starts in <t:{:.0f}:R> & Ends at <t:{:.0f}:T>**".format(
+        embed["content"] += " **Starts in <t:{:.0f}:R> & Ends at <t:{:.0f}:F>**".format(
             event.dtstart.timestamp(), event.dtend.timestamp())
         embed["embeds"][0]["fields"].append(start_time)
         embed["embeds"][0]["fields"].append(end_time)
@@ -187,16 +194,16 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
         embed["embeds"][0]["fields"].append(due_by)
 
     # send eyebleach pictures
-    key, media = randomCuteImageLink()
-    if key is not False:
-        embed["embeds"][0][key] = media.genJSON()
-        wholesome_footer = {
-            "name": "--------",
-            "value": "> Instead of sadness, have some eyebleach <:wholesome_seal:785811088616062976>\n"
-                     "||PM me (<@712318895062515809>) more eyebleach doggo pictures to be added here||\n",
-            "inline": False
-        }
-        embed["embeds"][0]["fields"].append(wholesome_footer)
+    # key, media = randomCuteImageLink()
+    # if key is not False:
+    #     embed["embeds"][0][key] = media.genJSON()
+    #     wholesome_footer = {
+    #         "name": "--------",
+    #         "value": "> Instead of sadness, have some eyebleach <:wholesome_seal:785811088616062976>\n"
+    #                  "||PM me (<@712318895062515809>) more eyebleach doggo pictures to be added here||\n",
+    #         "inline": False
+    #     }
+    #     embed["embeds"][0]["fields"].append(wholesome_footer)
 
     try:
         s = session.post(url=kwargs["webhook"]["url"], json=embed)
@@ -215,11 +222,13 @@ def randomCuteImageLink():
     # TODO: way to send gifs/mp4s in the embed
     links = {
         "image": [
+            # big floof
             Media("https://cdn.discordapp.com/emojis/816550207206195220.png?v=1"),
-            Media("https://i.redd.it/vr50ukpo3tz61.jpg"),
-            Media("https://i.redd.it/xd7z2tui9gy61.png"),
-            Media("https://i.imgur.com/SCNqBQG.jpg"),
-            Media("https://i.redd.it/3847pw673u751.jpg")
+            Media("https://i.redd.it/vr50ukpo3tz61.jpg"),  # chess big floof
+            Media("https://i.imgur.com/SCNqBQG.jpg"),  # godray doge
+            Media("https://i.redd.it/r43lhp2ubb571.jpg"),  # sleeping cat
+            Media("https://i.imgur.com/tjpANwc.jpg"),  # yawning cat
+            Media("https://i.redd.it/pffdsq3b0vl71.jpg")  # sunset cat
         ],
         "video": [
             Media("https://tenor.com/bCAqV.gif"),
