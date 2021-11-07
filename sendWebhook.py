@@ -23,7 +23,7 @@ from random import choice
 from discord import Color
 from requests import Session
 
-from rssPublisher import SimpleEvent, get_events, read_ics
+from rssPublisher import SimpleEvent, get_events, init_mapping, read_ics
 
 logger1 = logging.getLogger(__name__)
 
@@ -145,7 +145,7 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
                 "fields": [
                     {
                         "name": "__Subject__",
-                        "value": f"`{event.category}`",
+                        "value": f"`{event.category}`" + event.human_readable_sub_name,
                         "inline": False if event.description == "" else True
                     }
                 ]

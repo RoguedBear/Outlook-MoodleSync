@@ -15,6 +15,11 @@ empty_calendar: "BEGIN:VCALENDAR
 gist_id:
 gist_token:
 login_link:
+mapping:
+  - code: "subject code"
+    name: "subject name
+  - code: "subject 2 code"
+    name: "subject 2 name"
 password:
 username:
 webhook:
