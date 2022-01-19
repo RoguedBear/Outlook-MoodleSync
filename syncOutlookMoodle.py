@@ -61,7 +61,7 @@ def login(login_link: str, username: str, password: str) -> dict:
 
 
 def save_config(config: dict):
-    with open("config.yaml", "r+") as config_file:
+    with open("config.yaml", "r+", encoding="utf8") as config_file:
         config2 = yaml.safe_load(config_file)
         if config2 != config:
             logger.info("Dumping new config data")
@@ -117,7 +117,7 @@ rotate_logs.setFormatter(file_log_format)
 logger.addHandler(rotate_logs)
 
 try:
-    with open("config.yaml", "r") as config_file:
+    with open("config.yaml", "r", encoding="utf8") as config_file:
         config = yaml.safe_load(config_file)
 except FileNotFoundError:
     logger.exception("config file does not exist!")
