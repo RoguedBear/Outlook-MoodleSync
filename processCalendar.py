@@ -1,4 +1,4 @@
-#  Copyright (c) 2021 RoguedBear
+#  Copyright (c) 2021-22 RoguedBear
 """
 This file is part of Moodle-Calendar-Sync.
 
