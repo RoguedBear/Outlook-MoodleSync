@@ -22,6 +22,7 @@ from random import choice
 
 from discord import Color
 from requests import Session
+from custom_module import send_webhook_reminder_format
 
 from rssPublisher import SimpleEvent, get_events, init_mapping, read_ics
 
@@ -249,6 +250,7 @@ def randomCuteImageLink():
 
 def send_webhooks_main(config: dict):
     logger = logging.getLogger(__name__)
+    init_mapping(config, logger)
     events_list = get_events(read_ics())
     sent_events_hash = config.get("webhook", {}).get("sent-events-hash", [])
     hashes_to_add = []
@@ -262,6 +264,8 @@ def send_webhooks_main(config: dict):
             if sent:
                 hashes_to_add.append(cur_hash)
                 count += 1
+            if config["webhook"]["reminder_module"]["url"]:
+                send_webhook_reminder_format(config, session, event)
         else:
             hashes_to_add.append(cur_hash)
     logger.info("Sent %d webhooks", count)
