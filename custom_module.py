@@ -34,6 +34,9 @@ def send_webhook_reminder_format(config: dict, session: Session, event: SimpleEv
     sends webhook message in the format of:
     <subject name> - <assignment name> - due <time format>
     """
+    if event.has_batch and not event.for_eb12:
+        return
+
     subject_name = event.human_readable_sub_name.strip(" |`")
     if subject_name == "":
         subject_name = event.category

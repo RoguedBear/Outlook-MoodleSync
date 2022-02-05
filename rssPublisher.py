@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License along with
 Moodle-Calendar-Sync. If not, see <https://www.gnu.org/licenses/>.
 """
 
+import re
 import xml.dom.minidom
 from datetime import datetime
 from html import unescape
@@ -24,6 +25,8 @@ from typing import List
 from dateutil import tz
 from icalendar import Calendar, Event
 from rfeed import Feed, Guid, Item
+
+batch_re = re.compile(f"EB\d\d")
 
 
 class SimpleEvent:
@@ -34,10 +37,20 @@ class SimpleEvent:
         self.summary = unescape(str(event.get("SUMMARY", "")))
         self.description = str(event.get("DESCRIPTION", ""))
         self.category = unescape(str(event.get("CATEGORIES", "").cats[0]))
-        self.dtstart: datetime = event["DTSTART"].dt.astimezone(tz.gettz("Asia/Calcutta"))
-        self.dtend: datetime = event["DTEND"].dt.astimezone(tz.gettz("Asia/Calcutta"))
+        self.dtstart: datetime = event["DTSTART"].dt.astimezone(
+            tz.gettz("Asia/Calcutta"))
+        self.dtend: datetime = event["DTEND"].dt.astimezone(
+            tz.gettz("Asia/Calcutta"))
         self.last_mod: datetime = event['LAST-MODIFIED'].dt
         self.isquiz = False if self.dtstart == self.dtend else True
+
+        self.funny_name = re.sub('(as)(?:signment)',
+                                 make_funny_name,
+                                 self.summary,
+                                 flags=re.IGNORECASE
+                                 )
+
+        self.__for_eb12 = False
 
     @property
     def human_readable_sub_name(self):
@@ -46,6 +59,27 @@ class SimpleEvent:
             return f" | `{name}`"
         else:
             return ""
+
+    @property
+    def has_batch(self) -> bool:
+        items = batch_re.findall(self.summary)
+        if items == []:
+            return False
+        else:
+            for batch in items:
+                if batch == "EB12":
+                    self.__for_eb12 = True
+            return True
+
+    @property
+    def for_eb12(self) -> bool:
+        return self.__for_eb12
+
+
+def make_funny_name(matchobj):
+    table = str.maketrans("ASas", "REre")
+
+    return matchobj.group(1).translate(table) + matchobj.group(0)[2:]
 
 
 def init_mapping(config: dict, logger):
@@ -79,15 +113,18 @@ def generate_feed_item(event: SimpleEvent) -> Item:
     description = [f"**Event:** {event.summary}",
                    f"**Subject:** {event.category}"]
     if event.isquiz:
-        description.insert(1, f"**Starting time:** {event.dtend.strftime('%a %d %b, %H:%M:%S')}")
-        description.insert(2, f"**End time:** {event.dtend.strftime('%a %d %b, %H:%M:%S')}")
+        description.insert(
+            1, f"**Starting time:** {event.dtend.strftime('%a %d %b, %H:%M:%S')}")
+        description.insert(
+            2, f"**End time:** {event.dtend.strftime('%a %d %b, %H:%M:%S')}")
     else:
-        description.insert(1, f"**Due by:** {event.dtend.strftime('%a %d %b, %H:%M:%S')}")
+        description.insert(
+            1, f"**Due by:** {event.dtend.strftime('%a %d %b, %H:%M:%S')}")
 
     description = "\n".join(description)
 
     description += "" if event.description is None else (
-            "\n" + event.description)
+        "\n" + event.description)
     return Item(title=f"{event.summary}",
                 description=description,
                 author="BouncePrime@protonmail.com (BouncePrime)",

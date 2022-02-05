@@ -108,23 +108,34 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
         }
     }
     mentions = ""
+    url = kwargs["webhook"]["url"]
     if event.category == "ECSE219L(Specialization Core - I)":
         mentions = "<@&878107435477389362>"
-    elif event.category == "ECSE237L(Specialization Core - I)":
+        # if not ALLOW_EVERYONE:
+        url = kwargs["webhook"]["specialisation"]["ai"]
+    elif event.category in ["ECSE237L(Specialization Core - I)", "CSET230 (DevOps-Specialization Core - II)"]:
         mentions = "<@&878107877770948698>"
+        # if not ALLOW_EVERYONE:
+        url = kwargs["webhook"]["specialisation"]["devops"]
+    # parsing for batch names
+    elif event.has_batch:
+        if event.for_eb12:
+            mentions = "<@&796658898953830400>"
+        else:
+            mentions = "<@&785031417297109022>"
     else:
         mentions = "@everyone"
 
     embed = {
         "username": "LMS Bot",
         "avatar_url": "https://cdn.discordapp.com/emojis/831953662153588766.png",
-        "content": f"A new event on LMS popped up: `{event.summary}`\n{mentions}",
+        "content": f"A new event on LMS popped up: `{event.funny_name}`\n{mentions}",
         "allowed_mentions": {
             "parse": ["everyone", "roles"] if ALLOW_EVERYONE else [],
         },
         "embeds": [
             {
-                "title": f"__{event.summary}__",
+                "title": f"__{event.funny_name}__",
                 "type": "rich",
                 "description": "A new event popped up on LMS!\nIs it a quiz? an assignment? a bird? a plane?\n¯\\_("
                                "ツ)_/¯",
@@ -208,7 +219,7 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
     #     embed["embeds"][0]["fields"].append(wholesome_footer)
 
     try:
-        s = session.post(url=kwargs["webhook"]["url"], json=embed)
+        s = session.post(url=url, json=embed)
         s.raise_for_status()
     except Exception as e:
         logger1.exception(e)
