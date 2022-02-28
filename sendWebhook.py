@@ -47,7 +47,7 @@ class Media:
 
 def calculate_hash(event: SimpleEvent) -> str:
     checksum_str = event.summary + event.category + \
-        event.description + event.last_mod.isoformat()
+        event.description + event.dtstart.isoformat()
     return md5(checksum_str.encode('utf-8')).hexdigest()
 
 
