@@ -152,7 +152,7 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
                 },
                 "footer": {
                     "text": "Bot made by BouncePrime ♥ | teach' created event @ ",
-                    "icon_url": "https://cdn.discordapp.com/avatars/712318895062515809/a_f9b50dfe441c8ddc0a7f2cbe0b60ff0d.webp"
+                    "icon_url": "https://cdn.discordapp.com/avatars/712318895062515809/33f30b47a0d16090fe9794cbc69bb817.webp"
                 },
                 "fields": [
                     {
@@ -192,7 +192,7 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
             "value": event.dtend.strftime('%a %d %b, %H:%M:%S'),
             "inline": True
         }
-        embed["content"] += " **Starts in <t:{:.0f}:R> & Ends at <t:{:.0f}:F>**".format(
+        embed["content"] += " **Starts <t:{:.0f}:R> & Ends at <t:{:.0f}:F>**".format(
             event.dtstart.timestamp(), event.dtend.timestamp())
         embed["embeds"][0]["fields"].append(start_time)
         embed["embeds"][0]["fields"].append(end_time)
