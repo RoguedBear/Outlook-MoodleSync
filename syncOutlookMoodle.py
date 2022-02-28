@@ -207,7 +207,7 @@ try:
             logger.info(
                 "Calendar recieved is same. Gist does not need updating")
 except FileNotFoundError:
-    with open("calendar_.ics", "w") as file:
+    with open("calendar_.ics", "w", encoding="utf-8") as file:
         file.write(CALENDAR_TEXT)
     updateGist = True
 except Exception as e:
