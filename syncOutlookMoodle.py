@@ -189,7 +189,7 @@ CALENDAR_TEXT = process_calendar(calendar.text).decode()
 # check if calendar needs updating
 updateGist = False
 try:
-    with open("calendar_.ics", "r+", newline="") as stored_calendar:
+    with open("calendar_.ics", "r+", newline="", encoding="utf-8") as stored_calendar:
         old_calendar = stored_calendar.read()
         if len(old_calendar) != len(CALENDAR_TEXT):
             updateGist = True
@@ -210,6 +210,14 @@ except FileNotFoundError:
     with open("calendar_.ics", "w") as file:
         file.write(CALENDAR_TEXT)
     updateGist = True
+except Exception as e:
+    logger.exception("⚠⚠ LMS BOT BROKE")
+    requests.post(url=config["webhook"]["url"], json={
+        "username": "Broke Bot",
+        "content": f"<@{config['discord_id']}> bot broke. X_X ☠ \n```log\n" + str(e) + "\n```",
+        "allowed_mentions": {"parse": ["users"]}
+    }
+    )
 
 if updateGist:
     # update the gist to github
