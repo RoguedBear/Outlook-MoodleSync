@@ -96,7 +96,7 @@ def init_mapping(config: dict, logger):
 
 def read_ics():
     """get a calendar object from ics file"""
-    with open("calendar_.ics") as calendar:
+    with open("calendar_.ics", encoding="utf-8") as calendar:
         cal = Calendar.from_ical(calendar.read())
     return cal
     pass

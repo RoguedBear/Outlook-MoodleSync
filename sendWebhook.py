@@ -289,7 +289,7 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=10)
     logger1 = logging.getLogger(__name__)
-    with open("config.yaml") as f:
+    with open("config.yaml", encoding="utf-8") as f:
         config = yaml.safe_load(f)
 
     DEBUG = True
@@ -301,5 +301,5 @@ if __name__ == '__main__':
         hashes = [calculate_hash(event) for event in events_list]
         config["webhook"]["sent-events-hash"] = hashes
         # save it
-        with open("config.yaml", "w") as f:
+        with open("config.yaml", "w", encoding="utf-8") as f:
             yaml.safe_dump(config, f)

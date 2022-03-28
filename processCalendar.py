@@ -103,10 +103,10 @@ def process_calendar(calendar: str) -> bytes:  # str
 
 
 if __name__ == '__main__':
-    with open("calendar_.ics") as f:
+    with open("calendar_.ics", encoding="utf-8") as f:
         cal = f.read()
     x = process_calendar(cal)
     y = x.decode()
     # breakpoint()
-    with open("calendar_.ics", "wb") as f:
+    with open("calendar_.ics", "wb", encoding="utf-8") as f:
         f.write(x)
