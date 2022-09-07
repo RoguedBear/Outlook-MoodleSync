@@ -26,7 +26,15 @@ from dateutil import tz
 from icalendar import Calendar, Event
 from rfeed import Feed, Guid, Item
 
-batch_re = re.compile(f"EB\d\d")
+batch_re = re.compile(r"EB-?_?\d\d")
+eb12_re = re.compile(r"EB-?_?(?:(?:\d+,)+)?12")
+# matches:
+# EB-12
+# EB12
+# EB_12
+# EB11,12,13
+# EB11,13
+# EB9,10,11,13,12
 
 
 class SimpleEvent:
@@ -67,7 +75,7 @@ class SimpleEvent:
             return False
         else:
             for batch in items:
-                if batch == "EB12":
+                if eb12_re.match(batch):
                     self.__for_eb12 = True
             return True
 
