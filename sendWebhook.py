@@ -17,13 +17,15 @@ Moodle-Calendar-Sync. If not, see <https://www.gnu.org/licenses/>.
 """
 import json
 import logging
+from datetime import datetime
 from hashlib import md5
 from random import choice
 
+from dateutil import tz
 from discord import Color
 from requests import Session
-from custom_module import send_webhook_reminder_format
 
+from custom_module import send_webhook_reminder_format
 from rssPublisher import SimpleEvent, get_events, init_mapping, read_ics
 
 logger1 = logging.getLogger(__name__)
@@ -126,12 +128,25 @@ def sendWebhookUpdate(event: SimpleEvent, session: Session, **kwargs) -> bool:
     else:
         mentions = "@everyone"
 
+    __tag_everyone = ALLOW_EVERYONE
+    __content = f"A new event on LMS popped up: `{event.funny_name}`\n{mentions}"
+    # parsing if event is quiz and we're in start time < now < end time, then do some
+    # modifications
+    # TODO: this part could be moved to event class as event.expired
+    if event.isquiz:
+        now = datetime.now(tz=tz.gettz("Asia/Calcutta"))
+        if event.dtstart <= now <= event.dtend:
+            __content = f"A quiz has started on LMS, you still have time: `{event.funny_name}`\n{mentions}"
+        elif event.dtend <= now:
+            logger1.info("not tagging everyone for quiz: " + event.funny_name)
+            __tag_everyone = False
+
     embed = {
         "username": "LMS Bot",
         "avatar_url": "https://cdn.discordapp.com/emojis/831953662153588766.png",
-        "content": f"A new event on LMS popped up: `{event.funny_name}`\n{mentions}",
+        "content": __content,
         "allowed_mentions": {
-            "parse": ["everyone", "roles"] if ALLOW_EVERYONE else [],
+            "parse": ["everyone", "roles"] if __tag_everyone else [],
         },
         "embeds": [
             {
