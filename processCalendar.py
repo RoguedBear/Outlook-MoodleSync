@@ -43,9 +43,9 @@ def pre_process_calendar(cal: Calendar):
 
 def is_quiz(event: Event) -> int:
     """0 -> not a quiz; 1-> quiz start; 2-> quiz ends"""
-    if (summary := event.get("summary")).endswith("(Quiz opens)"):
+    if (summary := event.get("summary")).endswith("opens"):
         return 1
-    elif summary.endswith("(Quiz closes)"):
+    elif summary.endswith("closes"):
         return 2
     else:
         return 0
@@ -61,7 +61,7 @@ def find_match(events: List[Event], match: Event) -> Union[Event, bool]:
     for index, event in enumerate(events):
         summary: vText = event.get("summary")
         category = event.get("categories")
-        if summary.removesuffix("(Quiz opens)") == match.get("summary").removesuffix("(Quiz closes)") \
+        if summary.removesuffix("opens") == match.get("summary").removesuffix("closes") \
                 and category.to_ical() == match.get("categories").to_ical():
             return events.pop(index)
     return False
@@ -93,7 +93,8 @@ def process_calendar(calendar: str) -> bytes:  # str
                 if isinstance(merged_event, bool) and merged_event is False:
                     continue
                 merged_event['dtend'] = event.get('dtstart')
-                merged_event['summary'] = merged_event.get('summary').removesuffix(" (Quiz opens)")
+                merged_event['summary'] = merged_event.get(
+                    'summary').removesuffix("opens")
                 new_cal.add_component(merged_event)
 
         # if event is not a quiz, simply add it to the new calendar
@@ -108,5 +109,5 @@ if __name__ == '__main__':
     x = process_calendar(cal)
     y = x.decode()
     # breakpoint()
-    with open("calendar_.ics", "wb", encoding="utf-8") as f:
+    with open("calendar_.ics", "wb") as f:
         f.write(x)
