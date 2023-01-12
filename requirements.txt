@@ -4,3 +4,4 @@ python-dateutil
 icalendar
 rfeed
 six
+discord.py

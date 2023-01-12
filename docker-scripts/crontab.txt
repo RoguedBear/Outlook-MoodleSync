@@ -1,0 +1,2 @@
+# every 5th minute
+*/5 * * * *         /scripts/cron-entrypoint.sh
