@@ -81,6 +81,14 @@ you. \
 **THIS WARNING DOES NOT APPLY TO YOU IF YOU CAN VIEW YOUR CALENDAR WITHOUT THE NEED
 TO LOG IN**
 
+## Screenshots
+
+### Disord Integration
+
+- ![](/images/example-1.png)
+- ![](/images/example-2.png)
+- ![](/images/example-3.png)
+
 ## Installation
 
 - Make sure you have python 3.8+ installed and is in your PATH
